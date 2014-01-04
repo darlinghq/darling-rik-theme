@@ -3,4 +3,8 @@
 	ThemeName="Rik";
 	ThemeRelease="0.1";
 	Authors=("Riccardo Canalicchio <riccardo.canalicchio@gmail.com>");
+	GSThemeDomain = {
+	NSMenuInterfaceStyle = NSWindows95InterfaceStyle;
+	GSSuppressAppIcon = YES;
+  };
 }
