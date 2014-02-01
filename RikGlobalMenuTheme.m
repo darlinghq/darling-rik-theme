@@ -46,7 +46,6 @@ static Class _menuRegistryClass;
 
 - (void)setMenu: (NSMenu*)m forWindow: (NSWindow*)w
 {
-	NSLog(@"Non Vengo Mai CHIAMATO!");
   if (nil != menuRegistry)
     {
       [menuRegistry setMenu: m forWindow: w];
