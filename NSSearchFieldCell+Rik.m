@@ -16,11 +16,11 @@
 - (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
   NSRect frame = cellFrame;
-  [super drawWithFrame: [self searchTextRectForBounds: cellFrame ] 
+  [super drawWithFrame: [self searchTextRectForBounds: cellFrame ]
 	 inView: controlView];
  [_search_button_cell drawWithFrame: [self searchButtonRectForBounds: cellFrame] inView: controlView];
   if ([[self stringValue] length] > 0)
-    [_cancel_button_cell drawWithFrame: [self cancelButtonRectForBounds: cellFrame] 
+    [_cancel_button_cell drawWithFrame: [self cancelButtonRectForBounds: cellFrame]
 		       inView: controlView];
 }
 
@@ -34,7 +34,7 @@
 	{
 		part = rect;
 		/*set the right point and size*/
-		part.origin.x +=1;
+		part.origin.x +=0;
 		part.size.width -= 1;
 	}
 	else
@@ -47,27 +47,51 @@
 	return text;
 }
 
-- (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame 
+- (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame
                                     inView: (NSView*)controlView
 {
-	CGFloat radius = cellFrame.size.height / 2.0;
+
+  NSColor* whiteColor = [NSColor colorWithCalibratedRed: 1
+                                                  green: 1
+                                                   blue: 1
+                                                  alpha: 0.8];
+  NSColor* clearColor = [NSColor colorWithCalibratedRed: 1
+                                                  green: 1
+                                                   blue: 1
+                                                  alpha: 0];
+  NSColor * strokeBaseColor = [Rik controlStrokeColor];
+  NSColor * strokeLightColor = [strokeBaseColor highlightWithLevel: 0.3];
+
+  NSGradient* lightGradient = [[NSGradient alloc] initWithColorsAndLocations:
+      clearColor, 0.0,
+      whiteColor, 0.97, nil];
+  NSGradient* bezelBorderGradient = [[NSGradient alloc] initWithColorsAndLocations:
+      strokeBaseColor, 1.0,
+      strokeLightColor, 0.5, nil];
+  NSGradient* fillGradient = [[NSGradient alloc] initWithColorsAndLocations:
+      [strokeBaseColor highlightWithLevel: 0.7], 0.0,
+      [NSColor whiteColor], 0.2, nil];
+
 	NSRect rect = cellFrame;
-	rect.origin.x -= 0.5;
-	rect.origin.y += 0.5;
-	rect.size.height -= 1;
-	//rect.size.width += 1;
-	NSBezierPath* roundedSearchFieldPath = [NSBezierPath bezierPathWithRoundedRect: rect
+	CGFloat radius = rect.size.height / 2.0;
+	NSBezierPath* lightPath = [NSBezierPath bezierPathWithRoundedRect: rect
                                                                        xRadius: radius
                                                                        yRadius: radius];
-	[roundedSearchFieldPath setLineWidth:1.0];
-	[[NSColor whiteColor] setFill];
-	[roundedSearchFieldPath fill];
-	[[Rik controlStrokeColor] setStroke];
-	[roundedSearchFieldPath stroke];
+
+	NSBezierPath* bezelPath = [NSBezierPath bezierPathWithRoundedRect: NSInsetRect(rect, 1, 1)
+                                                                       xRadius: radius-2
+                                                                       yRadius: radius-2];
+	NSBezierPath* fillPath = [NSBezierPath bezierPathWithRoundedRect: NSInsetRect(rect, 2, 2)
+                                                                       xRadius: radius-2
+                                                                       yRadius: radius-2];
+  [lightGradient drawInBezierPath: lightPath angle: 90];
+  [bezelBorderGradient drawInBezierPath: bezelPath angle: -90];
+
+  [fillGradient drawInBezierPath: fillPath angle: 90];
 }
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
-{	
+{
   if (_cell.in_editing)
    [self _drawEditorWithFrame: cellFrame inView: controlView];
   else
@@ -110,13 +134,16 @@
   if (_cell.type == NSTextCellType)
     {
       NSRect frame = [self drawingRectForBounds: theRect];
-       //Add spacing between border and inside 
+       //Add spacing between border and inside
       if (_cell.is_bordered || _cell.is_bezeled)
         {
-          frame.origin.x += 15;
+          frame.origin.x += 16;
           frame.size.width -= 30;
-          frame.origin.y -= 1;
-          frame.size.height += 1;
+	  /*By Slex: If you modify this value, then the chars. will overlap when the text field is 		  *full filled of charcters. You'll see part of characters like 'p' or 'g' or 'j' taking
+          *the next line of the editor text field, looking very bad
+	  */
+          frame.size.height += 0;
+	  
         }
       return frame;
     }
@@ -130,7 +157,8 @@
 {
   NSRect search, part;
   NSDivideRect(rect, &search, &part, ICON_WIDTH, NSMinXEdge);
-  search.origin.x +=2;
+  search.origin.x += 4;
+  search.origin.y += 0;
   return search;
 }
 
@@ -138,9 +166,9 @@
 - (NSRect) cancelButtonRectForBounds: (NSRect)rect
 {
   NSRect part, clear;
-	
+
   NSDivideRect(rect, &clear, &part, ICON_WIDTH, NSMaxXEdge);
-  clear.origin.x -= 2; //This set the position inside the textsearch box
+  clear.origin.x -= 5; //This set the position inside the textsearch box
   return clear;
 }
 

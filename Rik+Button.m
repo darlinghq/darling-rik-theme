@@ -1,10 +1,45 @@
 #import "Rik.h"
 #import "Rik+Button.h"
 
+
+NSString * const kRikIsDefaultButton = @"kRikIsDefaultButton";
+NSString * const kRikPulseProgressKey = @"kRikPulseProgressKey";
+
+@implementation NSButtonCell(RikDefaultButtonAnimation)
+- (void)setIsDefaultButton:(NSNumber*) val
+{
+  objc_setAssociatedObject(self, kRikIsDefaultButton, val, OBJC_ASSOCIATION_COPY);
+}
+
+- (NSNumber *) isDefaultButton
+{
+	return objc_getAssociatedObject(self, kRikIsDefaultButton);
+}
+- (BOOL)defaultButton
+{
+	return [[self isDefaultButton] boolValue];
+}
+- (void)setPulseProgress:(NSNumber *)pulseProgress
+{
+	objc_setAssociatedObject(self, kRikPulseProgressKey, pulseProgress, OBJC_ASSOCIATION_COPY);
+}
+
+- (NSNumber*)pulseProgress
+{
+	return objc_getAssociatedObject(self, kRikPulseProgressKey);
+}
+@end
+
 @implementation Rik(RikButton)
-
-
-- (NSColor*)  buttonColorInCell:(NSCell*) cell forState: (GSThemeControlState) state
+- (NSColor*) pulseColorInCell:(NSButtonCell*) bc
+{
+  NSColor * color;
+  CGFloat pulse = [[bc pulseProgress] floatValue];
+  color = [NSColor colorWithCalibratedRed: 0.62 green: 0.82 blue: 0.965 alpha: 1];
+  color = [NSColor colorWithCalibratedHue: [color hueComponent] saturation: 1.0 - pulse*0.6 brightness: 0.9 + pulse*0.1 alpha: [color alphaComponent]];
+  return color;
+}
+- (NSColor*) buttonColorInCell:(NSCell*) cell forState: (GSThemeControlState) state
 {
 
   NSColor	*color = nil;
@@ -15,7 +50,6 @@
       if (state == GSThemeNormalState)
         {
           color = [[NSColor controlBackgroundColor] shadowWithLevel: 0.1];
-;
         }
       else if (state == GSThemeHighlightedState
 	       || state == GSThemeHighlightedFirstResponderState)
@@ -30,6 +64,15 @@
       else
         {
           color = [[NSColor controlBackgroundColor] shadowWithLevel: 0.1];
+        }
+    }
+    //PULSE ANIMATION COLOR IF IS PRESSED DONT ANIMATE..
+    if([cell class] == [NSButtonCell class] && state != GSThemeSelectedState)
+    {
+      NSButtonCell * bc = (NSButtonCell *)cell;
+      if(bc.isDefaultButton)
+        {
+          color = [self pulseColorInCell: bc];
         }
     }
   return color;
