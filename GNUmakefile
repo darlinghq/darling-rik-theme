@@ -33,13 +33,9 @@ Rik_OBJC_FILES = \
 		RikScrollerArrowCell.m\
 		NSBrowserCell+Rik.m\
 		NSSearchFieldCell+Rik.m\
-<<<<<<< HEAD
-		RikGlobalMenuTheme.m
-
-=======
+		RikGlobalMenuTheme.m\
 		NSCell+Rik.m\
 		NSTextFieldCell+Rik.m
->>>>>>> nssearchfield
 ADDITIONAL_TOOL_LIBS =
 $(BUNDLE_NAME)_RESOURCE_FILES = \
 	./Resources/ThemeImages\
