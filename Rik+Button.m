@@ -202,6 +202,13 @@ NSString * const kRikPulseProgressKey = @"kRikPulseProgressKey";
 			  state: (GSThemeControlState) state
 {
   NSColor	*color = [self buttonColorInCell: cell forState: state];
+  GSThemeMargins margins = [self buttonMarginsForCell: cell
+                                                style: style
+                                                state: state];
+  frame.origin.x += margins.left;
+  frame.size.width -= margins.left + margins.right;
+  frame.origin.y += margins.bottom;  // flipped
+  frame.size.height -= margins.bottom + margins.top;
 
   switch (style)
     {

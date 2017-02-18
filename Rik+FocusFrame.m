@@ -9,12 +9,18 @@
   NSBezierPath * path;
   if([view class] == [NSButton class])
     {
-        NSRect r = [view bounds];
-        NSImage * img = [(NSButton*) view image];
-        if(img != nil && ![(NSButton*)view isBordered])
+        NSButton *button = (NSButton *) view;
+        NSButtonCell *cell = [button cell];
+        int style = [button bezelStyle];
+        GSThemeControlState state = [cell themeControlState];
+
+        NSRect r = [button bounds];
+
+        NSImage * img = [button image];
+        if(img != nil && ![button isBordered])
           {
             NSSize s = [img size];
-            NSCellImagePosition cip = [(NSButton*) view imagePosition];
+            NSCellImagePosition cip = [button imagePosition];
             NSRect imageRect;
             switch(cip)
             {
@@ -41,10 +47,15 @@
           }
         else
           {
-
-        int bezel_style = [(NSButton*)view bezelStyle];
-        path = [self buttonBezierPathWithRect: NSInsetRect([view bounds], 1, 1)
-                                     andStyle: bezel_style];
+            GSThemeMargins margins = [self buttonMarginsForCell: cell
+                                                          style: style
+                                                          state: state];
+            r.origin.x += margins.left;
+            r.size.width -= margins.left + margins.right;
+            r.origin.y += margins.bottom;  // flipped
+            r.size.height -= margins.bottom + margins.top;
+            path = [self buttonBezierPathWithRect: NSInsetRect(r, 1, 1)
+                                         andStyle: style];
           }
     }
   else if([view class] == [NSStepper class])
